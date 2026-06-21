@@ -1,0 +1,407 @@
+---
+title: "🏎️ Formula 1 World Championship · 1950–2024"
+output:
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    vertical_layout: scroll
+---
+
+```{=html}
+<style>
+body { background-color: #0a0a0a !important; color: #f0f0f0 !important; }
+
+/* Navbar */
+.navbar {
+  background-color: #080808 !important;
+  border-bottom: 3px solid #E10600 !important;
+  min-height: 80px !important;
+}
+.navbar-brand {
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  font-size: 1.6rem !important;
+  line-height: 80px !important;
+  padding: 0 24px !important;
+  letter-spacing: 1px !important;
+}
+.navbar-nav > li > a {
+  color: #ffffff !important;
+  line-height: 80px !important;
+  font-size: 0.95rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 1px !important;
+  padding: 0 18px !important;
+}
+.navbar-nav > li.active > a {
+  background-color: #E10600 !important;
+  color: #ffffff !important;
+}
+
+/* Cards */
+.chart-wrapper, .chart-stage, .section.level3 {
+  background-color: #111111 !important;
+  border: 1px solid #222 !important;
+}
+.chart-title {
+  background-color: #111111 !important;
+  color: #ffffff !important;
+  border-bottom: 2px solid #E10600 !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  font-size: 1rem !important;
+  padding: 14px 18px !important;
+}
+
+/* Value boxes */
+.value-box { color: #ffffff !important; }
+.value-box .inner {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 24px 28px !important;
+  height: 100% !important;
+}
+.value-box .value {
+  font-size: 1.6rem !important;
+  font-weight: 800 !important;
+  color: #ffffff !important;
+  line-height: 1.4 !important;
+}
+.value-box .caption {
+  font-size: 0.85rem !important;
+  text-transform: uppercase !important;
+  color: rgba(255,255,255,0.8) !important;
+  letter-spacing: 1.5px !important;
+  margin-top: 6px !important;
+}
+.value-box i {
+  color: #ffffff !important;
+  font-size: 3.5rem !important;
+  opacity: 0.45 !important;
+  flex-shrink: 0 !important;
+}
+
+/* Tabela */
+table.dataTable { background-color: #111 !important; color: #f0f0f0 !important; }
+table.dataTable thead th {
+  background-color: #1a1a1a !important;
+  color: #E10600 !important;
+  border-bottom: 2px solid #E10600 !important;
+  text-transform: uppercase !important;
+  font-size: 0.82rem !important;
+  padding: 12px 10px !important;
+}
+table.dataTable tbody td { font-size: 0.95rem !important; padding: 11px 10px !important; }
+table.dataTable tbody tr { background-color: #111 !important; color: #e0e0e0 !important; }
+table.dataTable tbody tr:hover { background-color: #1a1a1a !important; }
+table.dataTable tbody tr.odd { background-color: #131313 !important; }
+.dataTables_wrapper .dataTables_filter input {
+  background-color: #1a1a1a !important;
+  color: #f0f0f0 !important;
+  border: 1px solid #333 !important;
+  font-size: 0.9rem !important;
+  padding: 6px 12px !important;
+}
+.dataTables_wrapper .dataTables_filter label,
+.dataTables_wrapper .dataTables_info { color: #888 !important; font-size: 0.88rem !important; }
+
+/* Rodapé */
+.footer-custom {
+  background-color: #080808 !important;
+  border-top: 3px solid #E10600 !important;
+  padding: 20px !important;
+  text-align: center !important;
+  width: 100% !important;
+}
+.footer-custom .disciplina {
+  color: #E10600 !important;
+  font-weight: 700 !important;
+  font-size: 0.95rem !important;
+  letter-spacing: 1px !important;
+  text-transform: uppercase !important;
+  margin-bottom: 6px !important;
+}
+.footer-custom .nomes {
+  color: #888 !important;
+  font-size: 0.88rem !important;
+  letter-spacing: 2px !important;
+  text-transform: uppercase !important;
+}
+</style>
+```
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(dplyr)
+library(ggplot2)
+library(plotly)
+library(DT)
+library(forcats)
+library(tibble)
+library(htmltools)
+
+constructors_summary <- tibble(
+  equipe       = c("Ferrari","McLaren","Williams","Mercedes","Lotus",
+                   "Red Bull","Brabham","Renault","Tyrrell","BRM"),
+  pais         = c("Itália","Reino Unido","Reino Unido","Alemanha",
+                   "Reino Unido","Áustria","Reino Unido","França",
+                   "Reino Unido","Reino Unido"),
+  primeiro_ano = c(1950,1966,1977,1954,1958,2005,1962,1977,1970,1951),
+  titulos      = c(16, 8, 9, 8, 7, 6, 2, 2, 1, 1),
+  vitorias     = c(243,183,114,125,79,119,35,35,23,17),
+  podios       = c(778,511,313,320,175,280,115,102,99,74),
+  cor          = c("#E8002D","#FF8000","#64C4FF","#00D2BE","#FFD700",
+                   "#3671C6","#2c7a2c","#CCCC00","#003399","#1aad1a")
+)
+
+eras_labels <- c("1950s","1960s","1970s","1980s","1990s",
+                 "2000s","2010-14","2015-19","2020-21","2022-24")
+
+eras_df <- tibble(
+  era    = rep(eras_labels, 6),
+  equipe = rep(c("Ferrari","McLaren","Williams",
+                 "Red Bull","Mercedes","Lotus"), each = 10),
+  vitorias = c(
+    15,25,38,10,28,16,14,20,17,28,
+     0, 5,30,44,28,10, 9,16, 8, 4,
+     0, 0, 0, 2,25,36,12, 8, 1, 0,
+     0, 0, 0, 0, 0, 0, 8,42,29,36,
+     0, 0, 0, 0, 0, 0, 0, 2,44,29,
+     0,12,38,15, 0, 0, 0, 0, 0, 0
+  )
+) %>%
+  mutate(era = factor(era, levels = eras_labels))
+```
+
+# Estrutura & Dados
+
+## Row
+
+### Responsável: Amanda {data-width="1000"}
+
+```{r}
+div(
+  style = "text-align:center; padding: 120px 20px;",
+  tags$h2(style = "color:#E10600; font-size:1.1rem; letter-spacing:3px; text-transform:uppercase;",
+          "⏳ Aba em construção"),
+  tags$p(style = "font-size:1.2rem; color:#aaa; margin-top:20px;",
+         "Responsável: Amanda"),
+  tags$p(style = "font-size:0.95rem; color:#555; margin-top:10px;",
+         "Setup, limpeza e organização do dataset · Estrutura base do .Rmd · GitHub do grupo")
+)
+```
+
+# Pilotos
+
+## Row
+
+### Responsável: Álvaro {data-width="1000"}
+
+```{r setup, include=FALSE}
+
+
+div(
+  style = "text-align:center; padding: 120px 20px;",
+  tags$h2(style = "color:#E10600; font-size:1.1rem; letter-spacing:3px; text-transform:uppercase;",
+          "⏳ Aba em construção"),
+  tags$p(style = "font-size:1.2rem; color:#aaa; margin-top:20px;",
+         "Responsável: Álvaro"),
+  tags$p(style = "font-size:0.95rem; color:#555; margin-top:10px;",
+         "Ranking de pilotos · Evolução de pontos e vitórias · Tabela interativa · ValueBoxes")
+)
+```
+
+# Equipes & Construtores
+
+## Row {data-height="200"}
+
+### 🏆 Maior Campeã {.value-box}
+
+```{r}
+valueBox(
+  value = "Ferrari · 16 títulos",
+  icon  = "fa-trophy",
+  color = "#E8002D"
+)
+```
+
+### 🏁 Mais Vitórias {.value-box}
+
+```{r}
+valueBox(
+  value = "Ferrari · 243 vitórias",
+  icon  = "fa-flag-checkered",
+  color = "#c0001f"
+)
+```
+
+### ⚡ Maior Sequência {.value-box}
+
+```{r}
+valueBox(
+  value = "Mercedes · 8 títulos (2014–2021)",
+  icon  = "fa-bolt",
+  color = "#007d74"
+)
+```
+
+### 🔱 Recorde na Temporada {.value-box}
+
+```{r}
+valueBox(
+  value = "Red Bull · 21 vitórias em 2023",
+  icon  = "fa-star",
+  color = "#3671C6"
+)
+```
+
+## Row {data-height="550"}
+
+### Ranking de Construtores (1950–2024) {data-width="420"}
+
+```{r}
+top10 <- constructors_summary %>%
+  arrange(desc(titulos), desc(vitorias)) %>%
+  select(Equipe = equipe, País = pais,
+         Títulos = titulos, Vitórias = vitorias, Pódios = podios)
+
+datatable(
+  top10,
+  rownames = FALSE,
+  options  = list(
+    pageLength = 10,
+    searching  = TRUE,
+    ordering   = TRUE,
+    dom        = "ft",
+    columnDefs = list(list(className = "dt-center", targets = 2:4)),
+    language   = list(search = "🔍 Buscar equipe:")
+  ),
+  class = "compact stripe"
+) %>%
+  formatStyle("Títulos",
+    background         = styleColorBar(c(0, max(top10$Títulos)), "#E8002D55"),
+    backgroundSize     = "98% 60%",
+    backgroundRepeat   = "no-repeat",
+    backgroundPosition = "center"
+  ) %>%
+  formatStyle("Vitórias",
+    background         = styleColorBar(c(0, max(top10$Vitórias)), "#FF800055"),
+    backgroundSize     = "98% 60%",
+    backgroundRepeat   = "no-repeat",
+    backgroundPosition = "center"
+  )
+```
+
+### Evolução de Vitórias por Era {data-width="580"}
+
+```{r}
+eras_df %>%
+  plot_ly(
+    x             = ~era,
+    y             = ~vitorias,
+    color         = ~equipe,
+    colors        = c("#E8002D","#FF8000","#64C4FF",
+                      "#3671C6","#00D2BE","#FFD700"),
+    type          = "scatter",
+    mode          = "lines+markers",
+    marker        = list(size = 8),
+    line          = list(width = 3),
+    hovertemplate = "<b>%{fullData.name}</b><br>Era: %{x}<br>Vitórias: %{y}<extra></extra>"
+  ) %>%
+  layout(
+    paper_bgcolor = "rgba(0,0,0,0)",
+    plot_bgcolor  = "rgba(0,0,0,0)",
+    font      = list(color = "#cccccc", size = 13),
+    legend    = list(orientation = "h", y = -0.2),
+    xaxis     = list(title = "", gridcolor = "#2a2a2a", tickangle = -30),
+    yaxis     = list(title = "Vitórias", gridcolor = "#2a2a2a"),
+    hovermode = "x unified"
+  )
+```
+
+## Row {data-height="500"}
+
+### Top 8 — Vitórias Totais {data-width="500"}
+
+```{r}
+constructors_summary %>%
+  arrange(desc(vitorias)) %>%
+  slice(1:8) %>%
+  mutate(equipe = fct_reorder(equipe, vitorias)) %>%
+  plot_ly(
+    y             = ~equipe,
+    x             = ~vitorias,
+    type          = "bar",
+    orientation   = "h",
+    marker        = list(color = ~cor, line = list(color = ~cor, width = 1)),
+    hovertemplate = "<b>%{y}</b><br>Vitórias: %{x}<extra></extra>"
+  ) %>%
+  layout(
+    paper_bgcolor = "rgba(0,0,0,0)",
+    plot_bgcolor  = "rgba(0,0,0,0)",
+    font  = list(color = "#cccccc", size = 13),
+    xaxis = list(title = "Vitórias", gridcolor = "#2a2a2a"),
+    yaxis = list(title = "")
+  )
+```
+
+### Top 8 — Pódios Totais {data-width="500"}
+
+```{r}
+constructors_summary %>%
+  arrange(desc(podios)) %>%
+  slice(1:8) %>%
+  mutate(equipe = fct_reorder(equipe, podios)) %>%
+  plot_ly(
+    y             = ~equipe,
+    x             = ~podios,
+    type          = "bar",
+    orientation   = "h",
+    marker        = list(color = ~cor, line = list(color = ~cor, width = 1)),
+    hovertemplate = "<b>%{y}</b><br>Pódios: %{x}<extra></extra>"
+  ) %>%
+  layout(
+    paper_bgcolor = "rgba(0,0,0,0)",
+    plot_bgcolor  = "rgba(0,0,0,0)",
+    font  = list(color = "#cccccc", size = 13),
+    xaxis = list(title = "Pódios", gridcolor = "#2a2a2a"),
+    yaxis = list(title = "")
+  )
+```
+
+## Row {data-height="100"}
+
+###  {data-width="1000"}
+
+```{r}
+div(
+  class = "footer-custom",
+  tags$p(
+    class = "disciplina",
+    "MAF 213 — Visualização de Dados · UFV Campus Florestal · 2026/1"
+  ),
+  tags$p(
+    class = "nomes",
+    "Amanda · Álvaro · Júlia · Maria Eduarda"
+  )
+)
+```
+
+# Circuitos & Corridas
+
+## Row
+
+### Responsável: Maria Eduarda {data-width="1000"}
+
+```{r}
+div(
+  style = "text-align:center; padding: 120px 20px;",
+  tags$h2(style = "color:#E10600; font-size:1.1rem; letter-spacing:3px; text-transform:uppercase;",
+          "⏳ Aba em construção"),
+  tags$p(style = "font-size:1.2rem; color:#aaa; margin-top:20px;",
+         "Responsável: Maria Eduarda"),
+  tags$p(style = "font-size:0.95rem; color:#555; margin-top:10px;",
+         "Mapa interativo de circuitos · Ranking de GPs · Países que mais sediaram corridas")
+)
+```

@@ -1,0 +1,83 @@
+body {
+  background-color: #0a0a0a !important;
+  color: #f0f0f0 !important;
+}
+
+.navbar {
+  background-color: #080808 !important;
+  border-bottom: 3px solid #E10600 !important;
+}
+
+.navbar-brand, .navbar-nav > li > a {
+  color: #ffffff !important;
+  font-weight: 700;
+}
+
+.navbar-brand {
+  color: #E10600 !important;
+}
+
+.chart-wrapper, .chart-stage, .section.level3 {
+  background-color: #111111 !important;
+  border: 1px solid #222 !important;
+  color: #f0f0f0 !important;
+}
+
+.chart-title {
+  background-color: #111111 !important;
+  color: #ffffff !important;
+  border-bottom: 2px solid #E10600 !important;
+  font-weight: 700 !important;
+  letter-spacing: 1px !important;
+  font-size: 0.82rem !important;
+  text-transform: uppercase !important;
+}
+
+.value-box .value {
+  font-size: 1.5rem !important;
+  font-weight: 800 !important;
+}
+
+.value-box .caption {
+  font-size: 0.75rem !important;
+  letter-spacing: 1px !important;
+  text-transform: uppercase !important;
+}
+
+table.dataTable {
+  background-color: #111 !important;
+  color: #f0f0f0 !important;
+}
+
+table.dataTable thead th {
+  background-color: #1a1a1a !important;
+  color: #E10600 !important;
+  border-bottom: 2px solid #E10600 !important;
+  font-size: 0.72rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+table.dataTable tbody tr {
+  background-color: #111 !important;
+  color: #e0e0e0 !important;
+}
+
+table.dataTable tbody tr:hover {
+  background-color: #1a1a1a !important;
+}
+
+table.dataTable tbody tr.odd {
+  background-color: #131313 !important;
+}
+
+.dataTables_wrapper .dataTables_filter input {
+  background-color: #1a1a1a !important;
+  color: #f0f0f0 !important;
+  border: 1px solid #333 !important;
+}
+
+.dataTables_wrapper .dataTables_info,
+.dataTables_wrapper .dataTables_filter label {
+  color: #888 !important;
+}
