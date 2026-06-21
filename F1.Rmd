@@ -174,6 +174,31 @@ eras_df <- tibble(
   mutate(era = factor(era, levels = eras_labels))
 ```
 
+```{r setup, include=FALSE}
+library(stringr)
+
+# Carregando as tabelas necessárias do dataset do Kaggle
+drivers <- read.csv("drivers.csv", stringsAsFactors = FALSE)
+results <- read.csv("results.csv")
+status  <- read.csv("status.csv")
+races   <- read.csv("races.csv")
+
+# Unificando nome e sobrenome e removendo espaços extras
+drivers <- drivers %>%
+  mutate(
+    driver_name = str_squish(paste(forename, surname)),
+    # Garantir que driverId seja tratado como caractere ou numérico consistente
+    driverId = as.integer(driverId) 
+  )
+
+# Cruzando os dados de resultados com pilotos e corridas para as análises
+f1_data <- results %>%
+  inner_join(drivers, by = "driverId") %>%
+  inner_join(races, by = "raceId") %>%
+  mutate(year = as.integer(year))
+```
+
+
 # Estrutura & Dados
 
 ## Row
@@ -194,21 +219,133 @@ div(
 
 # Pilotos
 
-## Row
+## Row {data-height="150"}
 
-### Responsável: Álvaro {data-width="1000"}
-
+### Pilotos com Mais Títulos
 ```{r setup, include=FALSE}
+titulos_por_piloto <- f1_data %>%
+  group_by(year, driver_name) %>%
+  summarise(total_points = sum(points, na.rm = TRUE), .groups = "drop") %>%
+  group_by(year) %>%
+  slice_max(total_points, n = 1, with_ties = FALSE) %>%
+  group_by(driver_name) %>%
+  summarise(titulos = n()) %>%
+  slice_max(titulos, n = 1, with_ties = FALSE)
+
+valueBox(
+  value = titulos_por_piloto$driver_name,
+  caption = paste("Mais Títulos Mundiais (", titulos_por_piloto$titulos, " títulos)"),
+  icon = "fa-trophy",
+  color = "gold"
+)
+```
+
+### Pilotos com Mais Vitórias
+```{r setup, include=FALSE}
+# 2. Agrupando por driverId para contar vitórias (positionOrder == 1)
+maior_vencedor <- f1_data %>%
+  filter(positionOrder == 1) %>%
+  group_by(driverId, driver_name) %>%
+  summarise(vitorias = n(), .groups = "drop") %>%
+  slice_max(vitorias, n = 1, with_ties = FALSE)
+
+valueBox(
+  value = maior_vencedor$driver_name,
+  caption = paste("Mais Vitórias na História (", maior_vencedor$vitorias, " vitórias)"),
+  icon = "fa-flag-checkered",
+  color = "danger"
+)
+```
+
+### Piloto com Mais Pódios
+```{r setup, include=FALSE}
+# 3. Pódios (Posições 1, 2 ou 3)
+maior_podios <- f1_data %>%
+  filter(positionOrder %in% c(1, 2, 3)) %>%
+  group_by(driverId, driver_name) %>%
+  summarise(podios = n(), .groups = "drop") %>%
+  slice_max(podios, n = 1, with_ties = FALSE)
+
+valueBox(
+  value = maior_podios$driver_name,
+  caption = paste("Mais Pódios na História (", maior_podios$podios, " pódios)"),
+  icon = "fa-star",
+  color = "info"
+)
+```
+
+## Row {data-height="450"}
+
+### Evolução de Pontos e Vitórias por Temporada (Top Pilotos)
+
+```{r}
+# Filtrar e agrupar evolução temporal para os pilotos com maior relevância histórica recente ou geral
+# Você pode mudar o filtro para analisar pilotos específicos (ex: Hamilton, Schumacher, Senna)
+top_pilotos_nomes <- c("Lewis Hamilton", "Michael Schumacher", "Ayrton Senna", "Max Verstappen")
+
+evolucao <- f1_data %>%
+  filter(driver_name %in% top_pilotos_nomes) %>%
+  group_by(year, driver_name) %>%
+  summarise(
+    pontos_ano = sum(points, na.rm = TRUE),
+    vitorias_ano = sum(positionOrder == 1),
+    .groups = "drop"
+  )
+
+# Gráfico interativo utilizando ggplot2 + plotly
+p <- ggplot(evolucao, aes(x = year, y = pontos_ano, color = driver_name, group = driver_name)) +
+  geom_line(size = 1) +
+  geom_point() +
+  labs(title = "Evolução de Pontos por Temporada", x = "Ano", y = "Pontos Obtidos", color = "Piloto") +
+  theme_minimal()
+
+ggplotly(p)
+```
+
+## Row {data-height+"400"}
+
+### Ranking e Estatísticas Gerais dos Pilotos (1950 - 2024)
+```{r}
+# Filtrando e agrupando os dados por piloto utilizando dplyr (group_by, summarise)
+ranking_pilotos <- f1_data %>%
+  filter(year >= 1950 & year <= 2024) %>%
+  group_by(driverId, driver_name) %>% # Usando o driverId conforme instrução do Obs.
+  summarise(
+    Nacionalidade = first(nationality),
+    Corridas = n(),
+    Vitórias = sum(positionOrder == 1),
+    Pódios = sum(positionOrder %in% c(1, 2, 3)),
+    Pontos_Totais = sum(points, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  select(-driverId) %>%
+  arrange(desc(Vitórias), desc(Pódios))
+
+# Inserindo tabela interativa com o pacote DT (com busca, ordenação e paginação automática)
+datatable(
+  ranking_pilotos,
+  colnames = c("Piloto", "Nacionalidade", "Corridas", "Vitórias", "Pódios", "Pontos Totais"),
+  options = list(pageLength = 10, searchHighlight = TRUE),
+  rownames = FALSE
+)
+```
 
 
+## Row {data-height="100"}
+
+###  {data-width="1000"}
+
+```{r}
 div(
-  style = "text-align:center; padding: 120px 20px;",
-  tags$h2(style = "color:#E10600; font-size:1.1rem; letter-spacing:3px; text-transform:uppercase;",
-          "⏳ Aba em construção"),
-  tags$p(style = "font-size:1.2rem; color:#aaa; margin-top:20px;",
-         "Responsável: Álvaro"),
-  tags$p(style = "font-size:0.95rem; color:#555; margin-top:10px;",
-         "Ranking de pilotos · Evolução de pontos e vitórias · Tabela interativa · ValueBoxes")
+  class = "footer-custom",
+  tags$p(
+    class = "disciplina",
+    "MAF 213 — Visualização de Dados · UFV Campus Florestal · 2026/1"
+  ),
+  tags$p(
+    class = "nomes",
+    "Amanda · Álvaro · Júlia · Maria Eduarda"
+  )
 )
 ```
 
