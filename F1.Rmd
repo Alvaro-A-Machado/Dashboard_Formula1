@@ -221,7 +221,11 @@ div(
 
 ## Row {data-height="150"}
 
+<<<<<<< HEAD
 ### Pilotos com Mais Títulos {data-width="333"}
+=======
+### Pilotos com Mais Títulos
+>>>>>>> 6c73bca9d5bdcf4dd94bcb09784105640d49da13
 ```{r}
 titulos_por_piloto <- f1_data %>%
   group_by(year, driver_name) %>%
@@ -240,7 +244,11 @@ valueBox(
 )
 ```
 
+<<<<<<< HEAD
 ### Pilotos com Mais Vitórias {data-width="333"}
+=======
+### Pilotos com Mais Vitórias
+>>>>>>> 6c73bca9d5bdcf4dd94bcb09784105640d49da13
 ```{r}
 # 2. Agrupando por driverId para contar vitórias (positionOrder == 1)
 maior_vencedor <- f1_data %>%
@@ -257,7 +265,11 @@ valueBox(
 )
 ```
 
+<<<<<<< HEAD
 ### Piloto com Mais Pódios {data-width="333"}
+=======
+### Piloto com Mais Pódios
+>>>>>>> 6c73bca9d5bdcf4dd94bcb09784105640d49da13
 ```{r}
 # 3. Pódios (Posições 1, 2 ou 3)
 maior_podios <- f1_data %>%
@@ -302,8 +314,12 @@ p <- ggplot(evolucao, aes(x = year, y = pontos_ano, color = driver_name, group =
 ggplotly(p)
 ```
 
+<<<<<<< HEAD
 ### Evolução de Vitórias por Temporada (Top Pilotos) {data-width="400"}
 ```{r}
+=======
+## Row {data-height="400"}
+>>>>>>> 6c73bca9d5bdcf4dd94bcb09784105640d49da13
 
 v <- ggplot(evolucao, aes(x = year, y = vitorias_ano, color = driver_name, group = driver_name)) +
   geom_line(size = 1) +
