@@ -222,7 +222,7 @@ div(
 ## Row {data-height="150"}
 
 ### Pilotos com Mais Títulos
-```{r setup, include=FALSE}
+```{r}
 titulos_por_piloto <- f1_data %>%
   group_by(year, driver_name) %>%
   summarise(total_points = sum(points, na.rm = TRUE), .groups = "drop") %>%
@@ -241,7 +241,7 @@ valueBox(
 ```
 
 ### Pilotos com Mais Vitórias
-```{r setup, include=FALSE}
+```{r}
 # 2. Agrupando por driverId para contar vitórias (positionOrder == 1)
 maior_vencedor <- f1_data %>%
   filter(positionOrder == 1) %>%
@@ -258,7 +258,7 @@ valueBox(
 ```
 
 ### Piloto com Mais Pódios
-```{r setup, include=FALSE}
+```{r}
 # 3. Pódios (Posições 1, 2 ou 3)
 maior_podios <- f1_data %>%
   filter(positionOrder %in% c(1, 2, 3)) %>%
@@ -302,7 +302,7 @@ p <- ggplot(evolucao, aes(x = year, y = pontos_ano, color = driver_name, group =
 ggplotly(p)
 ```
 
-## Row {data-height+"400"}
+## Row {data-height="400"}
 
 ### Ranking e Estatísticas Gerais dos Pilotos (1950 - 2024)
 ```{r}
