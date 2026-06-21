@@ -174,7 +174,7 @@ eras_df <- tibble(
   mutate(era = factor(era, levels = eras_labels))
 ```
 
-```{r setup, include=FALSE}
+```{r carregar_dados_pilotos, include=FALSE}
 library(stringr)
 
 # Carregando as tabelas necessárias do dataset do Kaggle
@@ -221,8 +221,8 @@ div(
 
 ## Row {data-height="150"}
 
-### Pilotos com Mais Títulos
-```{r setup, include=FALSE}
+### Pilotos com Mais Títulos {data-width="333"}
+```{r}
 titulos_por_piloto <- f1_data %>%
   group_by(year, driver_name) %>%
   summarise(total_points = sum(points, na.rm = TRUE), .groups = "drop") %>%
@@ -240,8 +240,8 @@ valueBox(
 )
 ```
 
-### Pilotos com Mais Vitórias
-```{r setup, include=FALSE}
+### Pilotos com Mais Vitórias {data-width="333"}
+```{r}
 # 2. Agrupando por driverId para contar vitórias (positionOrder == 1)
 maior_vencedor <- f1_data %>%
   filter(positionOrder == 1) %>%
@@ -257,8 +257,8 @@ valueBox(
 )
 ```
 
-### Piloto com Mais Pódios
-```{r setup, include=FALSE}
+### Piloto com Mais Pódios {data-width="333"}
+```{r}
 # 3. Pódios (Posições 1, 2 ou 3)
 maior_podios <- f1_data %>%
   filter(positionOrder %in% c(1, 2, 3)) %>%
@@ -276,7 +276,7 @@ valueBox(
 
 ## Row {data-height="450"}
 
-### Evolução de Pontos e Vitórias por Temporada (Top Pilotos)
+### Evolução de Pontos por Temporada (Top Pilotos) {data-width="400"}
 
 ```{r}
 # Filtrar e agrupar evolução temporal para os pilotos com maior relevância histórica recente ou geral
@@ -302,9 +302,21 @@ p <- ggplot(evolucao, aes(x = year, y = pontos_ano, color = driver_name, group =
 ggplotly(p)
 ```
 
-## Row {data-height+"400"}
+### Evolução de Vitórias por Temporada (Top Pilotos) {data-width="400"}
+```{r}
 
-### Ranking e Estatísticas Gerais dos Pilotos (1950 - 2024)
+v <- ggplot(evolucao, aes(x = year, y = vitorias_ano, color = driver_name, group = driver_name)) +
+  geom_line(size = 1) +
+  geom_point() +
+  labs(title = "Evolução de Vitórias por Temporada", x = "Ano", y = "Número de Vitórias", color = "Piloto") +
+  theme_minimal()
+
+ggplotly(v)
+```
+
+## Row {data-height="450"}
+
+### Ranking e Estatísticas Gerais dos Pilotos (1950 - 2024) {data-width="800"}
 ```{r}
 # Filtrando e agrupando os dados por piloto utilizando dplyr (group_by, summarise)
 ranking_pilotos <- f1_data %>%
@@ -527,18 +539,75 @@ div(
 
 # Circuitos & Corridas
 
-## Row
+```{r carregando_dados_circuitos}
+races <- read.csv("races.csv")
+circuits <- read.csv("circuits.csv")
 
-### Responsável: Maria Eduarda {data-width="1000"}
+dados_combinados <- races %>%
+  inner_join(circuits, by = "circuitId", suffix = c("_corrida", "_circuito"))
+```
+
+
+## Row {data-height=150}
+### Total de Grandes Prémios Realizados {.value-box}
+
+```{r}
+total_gps <- nrow(races)
+valueBox(total_gps, icon = "fa-flag-checkered", color = "danger")
+```
+
+
+### Países que já sediaram a F1 {.value-box}
+
+```{r}
+total_paises <- n_distinct(circuits$country)
+valueBox(total_paises, icon = "fa-globe", color = "info")
+```
+
+
+### Circuito Mais Tradicional {.value-box}
+
+```{r}
+
+mais_frequentado <- dados_combinados %>%
+  count(name_circuito, sort = TRUE) %>%
+  slice(1)
+
+valueBox(mais_frequentado$name_circuito, icon = "fa-trophy", color = "warning")
+
+```
+
+
+## Row {data-height=450}
+### Mapa Interativo dos Circuitos Mundiais
+
+```{r}
+library(leaflet)
+
+leaflet(circuits) %>%
+  addTiles() %>%
+  addMarkers(
+    lng = ~lng, 
+    lat = ~lat, 
+    popup = ~paste("<strong>", name, "</strong><br>", location, ", ", country),
+    clusterOptions = markerClusterOptions() 
+  )
+```
+
+
+## Row {data-height=100}
+### {data-width=1000}
 
 ```{r}
 div(
-  style = "text-align:center; padding: 120px 20px;",
-  tags$h2(style = "color:#E10600; font-size:1.1rem; letter-spacing:3px; text-transform:uppercase;",
-          "⏳ Aba em construção"),
-  tags$p(style = "font-size:1.2rem; color:#aaa; margin-top:20px;",
-         "Responsável: Maria Eduarda"),
-  tags$p(style = "font-size:0.95rem; color:#555; margin-top:10px;",
-         "Mapa interativo de circuitos · Ranking de GPs · Países que mais sediaram corridas")
+  class = "footer-custom",
+  tags$p(
+    class = "disciplina",
+    "MAF 213 — Visualização de Dados · UFV Campus Florestal · 2026/1"
+  ),
+  tags$p(
+    class = "nomes",
+    "Amanda · Álvaro · Júlia · Maria Eduarda"
+  )
 )
 ```
