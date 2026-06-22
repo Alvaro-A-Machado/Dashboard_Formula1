@@ -221,11 +221,8 @@ div(
 
 ## Row {data-height="150"}
 
-<<<<<<< HEAD
 ### Pilotos com Mais Títulos {data-width="333"}
-=======
-### Pilotos com Mais Títulos
->>>>>>> 6c73bca9d5bdcf4dd94bcb09784105640d49da13
+
 ```{r}
 titulos_por_piloto <- f1_data %>%
   group_by(year, driver_name) %>%
@@ -244,11 +241,9 @@ valueBox(
 )
 ```
 
-<<<<<<< HEAD
+
 ### Pilotos com Mais Vitórias {data-width="333"}
-=======
-### Pilotos com Mais Vitórias
->>>>>>> 6c73bca9d5bdcf4dd94bcb09784105640d49da13
+
 ```{r}
 # 2. Agrupando por driverId para contar vitórias (positionOrder == 1)
 maior_vencedor <- f1_data %>%
@@ -265,11 +260,9 @@ valueBox(
 )
 ```
 
-<<<<<<< HEAD
+
 ### Piloto com Mais Pódios {data-width="333"}
-=======
-### Piloto com Mais Pódios
->>>>>>> 6c73bca9d5bdcf4dd94bcb09784105640d49da13
+
 ```{r}
 # 3. Pódios (Posições 1, 2 ou 3)
 maior_podios <- f1_data %>%
@@ -291,8 +284,15 @@ valueBox(
 ### Evolução de Pontos por Temporada (Top Pilotos) {data-width="400"}
 
 ```{r}
-# Filtrar e agrupar evolução temporal para os pilotos com maior relevância histórica recente ou geral
-# Você pode mudar o filtro para analisar pilotos específicos (ex: Hamilton, Schumacher, Senna)
+# 1. Definir as cores oficiais das equipes dos respectivos pilotos para o gráfico
+cores_pilotos <- c(
+  "Lewis Hamilton"     = "#00D2BE", # Teal da Mercedes
+  "Michael Schumacher" = "#E8002D", # Vermelho da Ferrari
+  "Ayrton Senna"       = "#FF8000", # Laranja de Papaia da McLaren
+  "Max Verstappen"     = "#3671C6"  # Azul Marinho da Red Bull
+)
+
+# Filtrar e agrupar evolução temporal
 top_pilotos_nomes <- c("Lewis Hamilton", "Michael Schumacher", "Ayrton Senna", "Max Verstappen")
 
 evolucao <- f1_data %>%
@@ -304,26 +304,123 @@ evolucao <- f1_data %>%
     .groups = "drop"
   )
 
-# Gráfico interativo utilizando ggplot2 + plotly
+# 2. Construir o gráfico com o tema Dark customizado
 p <- ggplot(evolucao, aes(x = year, y = pontos_ano, color = driver_name, group = driver_name)) +
-  geom_line(size = 1) +
-  geom_point() +
-  labs(title = "Evolução de Pontos por Temporada", x = "Ano", y = "Pontos Obtidos", color = "Piloto") +
-  theme_minimal()
+  geom_line(size = 1.2, alpha = 0.85) +
+  geom_point(size = 2, alpha = 0.9) +
+  # Aplica a paleta de cores personalizada dos pilotos
+  scale_color_manual(values = cores_pilotos) +
+  labs(
+    #title = "Evolução de Pontos por Temporada", 
+    x = "Ano", 
+    y = "Pontos Obtidos", 
+    color = "Piloto"
+  ) +
+  # Customização fina para casar com o CSS do seu painel
+  theme_minimal(base_family = "sans") +
+  theme(
+    # Fundo do gráfico e do painel combinando com as caixas do flexdashboard (#111111)
+    plot.background   = element_rect(fill = "#111111", color = NA),
+    panel.background  = element_rect(fill = "#111111", color = NA),
+    
+    # Linhas de grade horizontais e verticais bem discretas
+    panel.grid.major  = element_line(color = "#252525", size = 0.4),
+    panel.grid.minor  = element_blank(),
+    
+    # Cores dos textos (Títulos e Eixos) em branco/cinza claro
+    plot.title        = element_text(color = "#ffffff", face = "bold", size = 14, vjust = 2),
+    axis.title        = element_text(color = "#aaaaaa", size = 11),
+    axis.text         = element_text(color = "#888888", size = 10),
+    
+    # Legenda interna (caso o Plotly exiba a legenda do ggplot)
+    legend.title      = element_text(color = "#ffffff", face = "bold"),
+    legend.text       = element_text(color = "#e0e0e0"),
+    legend.background = element_rect(fill = "#111111", color = NA)
+  )
 
-ggplotly(p)
+# 3. Converter para Plotly aplicando correções de fundo e estilo de tooltip (balão)
+ggplotly(p) %>%
+  layout(
+    # Garante que o fundo do container do Plotly também seja escuro
+    plot_bgcolor  = "#111111",
+    paper_bgcolor = "#111111",
+    # Estilização da legenda interativa do Plotly
+    legend = list(
+      font = list(color = "#ffffff"),
+      bgcolor = "transparent"
+    ),
+    # Customização do balão que aparece ao passar o mouse (Tooltip)
+    hoverlabel = list(
+      bgcolor = "#222222",
+      font = list(color = "#ffffff", size = 12),
+      bordercolor = "#E10600" # Borda vermelha padrão F1
+    )
+  )
 ```
 
 
 ### Evolução de Vitórias por Temporada (Top Pilotos) {data-width="400"}
 ```{r}
-v <- ggplot(evolucao, aes(x = year, y = vitorias_ano, color = driver_name, group = driver_name)) +
-  geom_line(size = 1) +
-  geom_point() +
-  labs(title = "Evolução de Vitórias por Temporada", x = "Ano", y = "Número de Vitórias", color = "Piloto") +
-  theme_minimal()
+# 1. Definir as cores oficiais das equipes dos respectivos pilotos para o gráfico
+cores_pilotos <- c(
+  "Lewis Hamilton"     = "#00D2BE", # Teal da Mercedes
+  "Michael Schumacher" = "#E8002D", # Vermelho da Ferrari
+  "Ayrton Senna"       = "#FF8000", # Laranja de Papaia da McLaren
+  "Max Verstappen"     = "#3671C6"  # Azul Marinho da Red Bull
+)
 
-ggplotly(v)
+# 2. Construir o gráfico de vitórias com o tema Dark customizado
+v <- ggplot(evolucao, aes(x = year, y = vitorias_ano, color = driver_name, group = driver_name)) +
+  geom_line(size = 1.2, alpha = 0.85) +
+  geom_point(size = 2, alpha = 0.9) +
+  # Aplica a paleta de cores personalizada dos pilotos
+  scale_color_manual(values = cores_pilotos) +
+  labs(
+    #title = "Evolução de Vitórias por Temporada", 
+    x = "Ano", 
+    y = "Número de Vitórias", 
+    color = "Piloto"
+  ) +
+  # Customização fina para casar com o CSS do seu painel
+  theme_minimal(base_family = "sans") +
+  theme(
+    # Fundo do gráfico e do painel combinando com as caixas do flexdashboard (#111111)
+    plot.background   = element_rect(fill = "#111111", color = NA),
+    panel.background  = element_rect(fill = "#111111", color = NA),
+    
+    # Linhas de grade horizontais e verticais bem discretas
+    panel.grid.major  = element_line(color = "#252525", size = 0.4),
+    panel.grid.minor  = element_blank(),
+    
+    # Cores dos textos (Títulos e Eixos) em branco/cinza claro
+    plot.title        = element_text(color = "#ffffff", face = "bold", size = 14, vjust = 2),
+    axis.title        = element_text(color = "#aaaaaa", size = 11),
+    axis.text         = element_text(color = "#888888", size = 10),
+    
+    # Legenda interna (caso o Plotly exiba a legenda do ggplot)
+    legend.title      = element_text(color = "#ffffff", face = "bold"),
+    legend.text       = element_text(color = "#e0e0e0"),
+    legend.background = element_rect(fill = "#111111", color = NA)
+  )
+
+# 3. Converter para Plotly aplicando correções de fundo e estilo de tooltip (balão)
+ggplotly(v) %>%
+  layout(
+    # Garante que o fundo do container do Plotly também seja escuro
+    plot_bgcolor  = "#111111",
+    paper_bgcolor = "#111111",
+    # Estilização da legenda interativa do Plotly
+    legend = list(
+      font = list(color = "#ffffff"),
+      bgcolor = "transparent"
+    ),
+    # Customização do balão que aparece ao passar o mouse (Tooltip)
+    hoverlabel = list(
+      bgcolor = "#222222",
+      font = list(color = "#ffffff", size = 12),
+      bordercolor = "#E10600" # Borda vermelha padrão F1
+    )
+  )
 ```
 
 ## Row {data-height="450"}
@@ -342,16 +439,46 @@ ranking_pilotos <- f1_data %>%
     Pontos_Totais = sum(points, na.rm = TRUE),
     .groups = "drop"
   ) %>%
-  select(-driverId) %>%
+  ungroup() %>%
+  # Ajustando os nomes das colunas direto no select para alinhar com o formatStyle
+  select(
+    Piloto          = driver_name, 
+    Nacionalidade, 
+    Corridas, 
+    Vitórias, 
+    Pódios, 
+    `Pontos Totais` = Pontos_Totais
+  ) %>%
   arrange(desc(Vitórias), desc(Pódios))
 
-# Inserindo tabela interativa com o pacote DT (com busca, ordenação e paginação automática)
+# Inserindo tabela interativa com o pacote DT (seguindo o padrão visual do grupo)
 datatable(
   ranking_pilotos,
-  colnames = c("Piloto", "Nacionalidade", "Corridas", "Vitórias", "Pódios", "Pontos Totais"),
-  options = list(pageLength = 10, searchHighlight = TRUE),
-  rownames = FALSE
-)
+  rownames = FALSE,
+  options  = list(
+    pageLength = 10,
+    searching  = TRUE,
+    ordering   = TRUE,
+    dom        = "ft", # Mantém apenas o campo de busca (f) e a tabela (t)
+    columnDefs = list(list(className = "dt-center", targets = 2:5)), # Centraliza as colunas numéricas
+    language   = list(search = "🔍 Buscar piloto:")
+  ),
+  class = "compact stripe"
+) %>%
+  # Adiciona a barra de progresso vermelha (F1) na coluna de Vitórias
+  formatStyle("Vitórias",
+    background         = styleColorBar(c(0, max(ranking_pilotos$Vitórias)), "#E8002D55"),
+    backgroundSize     = "98% 60%",
+    backgroundRepeat   = "no-repeat",
+    backgroundPosition = "center"
+  ) %>%
+  # Adiciona a barra de progresso laranja na coluna de Pódios
+  formatStyle("Pódios",
+    background         = styleColorBar(c(0, max(ranking_pilotos$Pódios)), "#FF800055"),
+    backgroundSize     = "98% 60%",
+    backgroundRepeat   = "no-repeat",
+    backgroundPosition = "center"
+  )
 ```
 
 
@@ -590,8 +717,8 @@ valueBox(mais_frequentado$name_circuito, icon = "fa-trophy", color = "warning")
 ```
 
 
-## Row {data-height=450}
-### Mapa Interativo dos Circuitos Mundiais
+## Row {data-height="600"}
+### Mapa Interativo dos Circuitos Mundiais {data-width="400"}
 
 ```{r}
 library(leaflet)
@@ -606,9 +733,52 @@ leaflet(circuits) %>%
   )
 ```
 
+### Países que Mais Sediaram Corridas (Top 15) {data-width="400"}
 
-## Row {data-height=100}
-### {data-width=1000}
+```{r}
+# Contagem de corridas por país para o gráfico de barras
+dados_paises <- dados_combinados %>%
+  count(country, sort = TRUE) %>%
+  head(15)
+
+ggplot(dados_paises, aes(x = reorder(country, n), y = n)) +
+  geom_col(fill = "firebrick") +
+  coord_flip() +
+  labs(
+    x = "País",
+    y = "Número de Corridas"
+  ) +
+  theme_minimal()
+```
+
+## Row {data-height="400"}
+
+### Estatísticas e Rankings por Grande Prémio
+
+```{r}
+library(DT)
+
+ranking_gps <- dados_combinados %>%
+  group_by(name_corrida) %>%
+  summarise(
+    Edicoes = n(),
+    Pais = first(country),
+    Primeiro_Ano = min(year),
+    Ultimo_Ano = max(year)
+  ) %>%
+  arrange(desc(Edicoes))
+
+datatable(
+  ranking_gps,
+  options = list(pageLength = 5, searchHighlight = TRUE),
+  colnames = c("Grande Prémio", "Edições", "País", "Ano de Estreia", "Último Ano"),
+  rownames = FALSE
+)
+```
+
+
+## Row {data-height="100"}
+### {data-width="1000"}
 
 ```{r}
 div(
