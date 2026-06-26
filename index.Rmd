@@ -140,6 +140,31 @@ library(DT)
 library(forcats)
 library(tibble)
 library(htmltools)
+library(stringr)
+
+drivers <- read.csv("drivers.csv", stringsAsFactors = FALSE)
+results <- read.csv("results.csv")
+status  <- read.csv("status.csv")
+races   <- read.csv("races.csv")
+constructors <- read.csv("constructors.csv")
+circuits <- read.csv("circuits.csv")
+
+###############################   ALVARO   ####################################
+drivers <- drivers %>%
+  mutate(
+    driver_name = str_squish(paste(forename, surname)),
+    driverId = as.integer(driverId) 
+  )
+
+# Cruzando os dados de resultados com pilotos e corridas para as análises
+f1_data <- results %>%
+  inner_join(drivers, by = "driverId") %>%
+  inner_join(races, by = "raceId") %>%
+  mutate(year = as.integer(year))
+
+###############################################################################
+
+###############################   JULIA   ####################################
 
 constructors_summary <- tibble(
   equipe       = c("Ferrari","McLaren","Williams","Mercedes","Lotus",
@@ -172,49 +197,313 @@ eras_df <- tibble(
   )
 ) %>%
   mutate(era = factor(era, levels = eras_labels))
-```
 
-```{r carregar_dados_pilotos, include=FALSE}
-library(stringr)
+###############################################################################
 
-# Carregando as tabelas necessárias do dataset do Kaggle
-drivers <- read.csv("drivers.csv", stringsAsFactors = FALSE)
-results <- read.csv("results.csv")
-status  <- read.csv("status.csv")
-races   <- read.csv("races.csv")
+##############################    DUDA    ##################################### 
 
-# Unificando nome e sobrenome e removendo espaços extras
-drivers <- drivers %>%
+dados_combinados <- races %>%
+  inner_join(circuits, by = "circuitId", suffix = c("_corrida", "_circuito"))
+
+###############################################################################
+
+
+###############################   AMANDA   ####################################
+
+races_clean <- races %>%
   mutate(
-    driver_name = str_squish(paste(forename, surname)),
-    # Garantir que driverId seja tratado como caractere ou numérico consistente
-    driverId = as.integer(driverId) 
+    year = as.integer(year),
+    round = as.integer(round),
+    race_name = name
   )
 
-# Cruzando os dados de resultados com pilotos e corridas para as análises
-f1_data <- results %>%
-  inner_join(drivers, by = "driverId") %>%
-  inner_join(races, by = "raceId") %>%
-  mutate(year = as.integer(year))
+results_clean <- results %>%
+  mutate(
+    points = as.numeric(points),
+    positionOrder = as.integer(positionOrder)
+  )
+
+drivers_clean <- drivers %>%
+  mutate(
+    driver = paste(forename, surname)
+  )
+
+constructors_clean <- constructors %>%
+  rename(
+    constructor = name
+  )
+
+circuits_clean <- circuits %>%
+  rename(
+    circuit = name
+  )
+
+coverage_by_year <- races_clean %>%
+  count(year, name = "corridas") %>%
+  arrange(year)
+
+races_by_country <- races_clean %>%
+  left_join(
+    circuits_clean %>% select(circuitId, country),
+    by = "circuitId"
+  ) %>%
+  count(country, sort = TRUE, name = "corridas") %>%
+  slice_head(n = 10)
+
+status_summary <- results_clean %>%
+  left_join(status, by = "statusId") %>%
+  mutate(
+    grupo_status = case_when(
+      grepl("Finished|Lap", status, ignore.case = TRUE) ~ "Completou a prova",
+      TRUE ~ "Nao completou"
+    )
+  ) %>%
+  count(grupo_status, name = "resultados")
+
+status_summary <- status_summary %>%
+  mutate(
+    percentual = resultados / sum(resultados),
+    rotulo = paste0(round(percentual * 100), "%")
+  )
+
+csv_inventory <- tribble(
+  ~Arquivo, ~Objeto, ~Linhas, ~Colunas, ~Uso,
+  "races.csv", "Corridas", nrow(races), ncol(races), "anos, etapas, calendario e circuitos",
+  "results.csv", "Resultados", nrow(results), ncol(results), "chegadas, pontos, voltas e posicoes finais",
+  "drivers.csv", "Pilotos", nrow(drivers), ncol(drivers), "cadastro, nacionalidade e chaves dos pilotos",
+  "constructors.csv", "Construtores", nrow(constructors), ncol(constructors), "cadastro das equipes",
+  "circuits.csv", "Circuitos", nrow(circuits), ncol(circuits), "paises, cidades e coordenadas",
+  "status.csv", "Status", nrow(status), ncol(status), "motivos de classificacao ou abandono"
+)
+
+data_dictionary <- tibble(
+  Tabela = c("races", "results", "drivers", "constructors", "circuits", "status"),
+  Chave = c("raceId", "resultId", "driverId", "constructorId", "circuitId", "statusId"),
+  Granularidade = c(
+    "uma linha por Grande Premio",
+    "uma linha por piloto em cada corrida",
+    "uma linha por piloto cadastrado",
+    "uma linha por equipe",
+    "uma linha por circuito",
+    "uma linha por tipo de status"
+  ),
+  Campos = c(
+    "year, round, circuitId, name",
+    "raceId, driverId, constructorId, points, positionOrder",
+    "forename, surname, nationality, dob",
+    "name, nationality",
+    "name, location, country, lat, lng",
+    "status"
+  )
+)
+
+metric_periodo <- paste0(min(races_clean$year), "-", max(races_clean$year))
+metric_corridas <- format(nrow(races_clean), big.mark = ".")
+metric_pilotos <- format(n_distinct(drivers_clean$driverId), big.mark = ".")
+metric_circuitos <- paste0(
+  n_distinct(circuits_clean$circuitId),
+  " circuitos / ",
+  n_distinct(circuits_clean$country),
+  " paises"
+)
+
+###############################################################################
+
 ```
+
+
 
 
 # Estrutura & Dados
 
-## Row
+## Row {data-height="200"}
 
-### Responsável: Amanda {data-width="1000"}
+### Temporadas cobertas {.value-box}
 
 ```{r}
-div(
-  style = "text-align:center; padding: 120px 20px;",
-  tags$h2(style = "color:#E10600; font-size:1.1rem; letter-spacing:3px; text-transform:uppercase;",
-          "⏳ Aba em construção"),
-  tags$p(style = "font-size:1.2rem; color:#aaa; margin-top:20px;",
-         "Responsável: Amanda"),
-  tags$p(style = "font-size:0.95rem; color:#555; margin-top:10px;",
-         "Setup, limpeza e organização do dataset · Estrutura base do .Rmd · GitHub do grupo")
+valueBox(
+  value = "1950 - 2024",
+  icon  = "fa-trophy",
+  color = "#E8002D"
 )
+```
+
+### Grandes Prêmios {.value-box}
+
+```{r}
+valueBox(
+  value = "1.225",
+  icon  = "fa-flag-checkered",
+  color = "#c0001f"
+)
+```
+
+### Pilotos Únicos{.value-box}
+
+```{r}
+valueBox(
+  value = "861",
+  icon  = "fa-bolt",
+  color = "#007d74"
+)
+```
+
+### Estrutura Geográfica {.value-box}
+
+```{r}
+valueBox(
+  value = "77 circuitos | 35 Países",
+  icon  = "fa-star",
+  color = "#3671C6"
+)
+```
+
+## Row
+
+### Inventario dos Arquivos
+
+```{r}
+csv_inventory %>%
+  datatable(
+    rownames = FALSE,
+    options = list(
+      pageLength = 6,
+      searching = FALSE,
+      ordering = TRUE,
+      dom = "t",
+      columnDefs = list(list(className = "dt-center", targets = 2:3))
+    ),
+    class = "compact stripe"
+  )
+```
+
+## Row
+
+### Corridas por Temporada {data-width="400"}
+
+```{r}
+coverage_by_year %>%
+  plot_ly(
+    x = ~year,
+    y = ~corridas,
+    type = "scatter",
+    mode = "lines+markers",
+    height = 350,
+    line = list(color = "#E10600", width = 3),
+    marker = list(color = "#ffffff", size = 6),
+    hovertemplate = "Ano: %{x}<br>Corridas: %{y}<extra></extra>"
+  ) %>%
+  layout(
+    autosize = TRUE,
+    paper_bgcolor = "rgba(0,0,0,0)",
+    plot_bgcolor = "rgba(0,0,0,0)",
+    font = list(color = "#cccccc", size = 13),
+    margin = list(l = 60, r = 25, t = 20, b = 45),
+    xaxis = list(
+      title = "",
+      gridcolor = "#2a2a2a",
+      zerolinecolor = "#2a2a2a"
+    ),
+    yaxis = list(
+      title = "Numero de corridas",
+      gridcolor = "#2a2a2a",
+      zerolinecolor = "#2a2a2a"
+    )
+  ) %>%
+  config(displayModeBar = FALSE, responsive = TRUE)
+```
+
+### Paises com Mais Corridas {data-width="400"}
+
+```{r}
+races_by_country %>%
+  mutate(country = fct_reorder(country, corridas)) %>%
+  plot_ly(
+    x = ~corridas,
+    y = ~country,
+    type = "bar",
+    orientation = "h",
+    height = 350,
+    marker = list(color = "#E10600"),
+    text = ~corridas,
+    textposition = "outside",
+    cliponaxis = FALSE,
+    hovertemplate = "<b>%{y}</b><br>Corridas: %{x}<extra></extra>"
+  ) %>%
+  layout(
+    autosize = TRUE,
+    paper_bgcolor = "rgba(0,0,0,0)",
+    plot_bgcolor = "rgba(0,0,0,0)",
+    font = list(color = "#cccccc", size = 13),
+    margin = list(l = 105, r = 45, t = 20, b = 45),
+    xaxis = list(
+      title = "Corridas",
+      gridcolor = "#2a2a2a",
+      zerolinecolor = "#2a2a2a"
+    ),
+    yaxis = list(title = "")
+  ) %>%
+  config(displayModeBar = FALSE, responsive = TRUE)
+```
+
+## Row
+
+### Status dos Resultados {data-width="400"} 
+
+```{r}
+status_summary %>%
+  plot_ly(
+    labels = ~grupo_status,
+    values = ~resultados,
+    type = "pie",
+    hole = 0.58,
+    height = 350,
+    marker = list(colors = c("#E10600", "#555555")),
+    text = ~rotulo,
+    textinfo = "text",
+    textposition = "inside",
+    insidetextfont = list(color = "#ffffff", size = 18),
+    hovertemplate = "<b>%{label}</b><br>Resultados: %{value}<extra></extra>"
+  ) %>%
+  layout(
+    autosize = TRUE,
+    paper_bgcolor = "rgba(0,0,0,0)",
+    plot_bgcolor = "rgba(0,0,0,0)",
+    font = list(color = "#cccccc", size = 13),
+    margin = list(l = 20, r = 20, t = 20, b = 35),
+    legend = list(
+      orientation = "h",
+      x = 0.05,
+      y = -0.05
+    )
+  ) %>%
+  config(displayModeBar = FALSE, responsive = TRUE)
+```
+
+### O que esta aba mostra {data-width="400"}
+
+- Quais arquivos do Kaggle foram usados.
+- Quantas temporadas, corridas, pilotos, circuitos e paises aparecem na base.
+- Como as tabelas se relacionam por chaves, como `raceId`, `driverId`, `constructorId`, `circuitId` e `statusId`.
+- Uma checagem visual da cobertura do dataset antes das analises do grupo.
+
+
+## Row
+
+### Dicionario Relacional
+
+```{r}
+data_dictionary %>%
+  datatable(
+    rownames = FALSE,
+    options = list(
+      pageLength = 6,
+      searching = FALSE,
+      ordering = FALSE,
+      dom = "t"
+    ),
+    class = "compact stripe"
+  )
 ```
 
 # Pilotos
@@ -677,15 +966,6 @@ div(
 ```
 
 # Circuitos & Corridas
-
-```{r carregando_dados_circuitos}
-races <- read.csv("races.csv")
-circuits <- read.csv("circuits.csv")
-
-dados_combinados <- races %>%
-  inner_join(circuits, by = "circuitId", suffix = c("_corrida", "_circuito"))
-```
-
 
 ## Row {data-height=150}
 ### Total de Grandes Prémios Realizados {.value-box}
