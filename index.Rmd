@@ -532,24 +532,19 @@ div(
 ### Pilotos com Mais Títulos {data-width="333"}
 
 ```{r}
-top3_titulos <- f1_data %>%
+titulos_por_piloto <- f1_data %>%
   group_by(year, driver_name) %>%
   summarise(total_points = sum(points, na.rm = TRUE), .groups = "drop") %>%
   group_by(year) %>%
   slice_max(total_points, n = 1, with_ties = FALSE) %>%
   group_by(driver_name) %>%
   summarise(titulos = n()) %>%
-  arrange(desc(titulos)) %>%
-  slice_head(n = 3)
-
-# Usamos <br> simples para quebrar a linha sem complicar o layout
-val_text <- paste(paste0("        ", 1:nrow(top3_titulos), ". ", top3_titulos$driver_name), "
-                         ", collapse = "<br/>")
+  slice_max(titulos, n = 1, with_ties = FALSE)
 
 valueBox(
-  value = HTML(val_text), 
-  caption = "TOP 3 — Mais Títulos", 
-  icon = "fa-trophy", 
+  value = titulos_por_piloto$driver_name,
+  caption = paste("Mais Títulos Mundiais (", titulos_por_piloto$titulos, " títulos)"),
+  icon = "fa-trophy",
   color = "gold"
 )
 ```
@@ -558,22 +553,17 @@ valueBox(
 ### Pilotos com Mais Vitórias {data-width="333"}
 
 ```{r}
-# 2. Agrupando por driverId para contar vitórias (positionOrder == 1)
-top3_vitorias <- f1_data %>%
+maior_vencedor <- f1_data %>%
   filter(positionOrder == 1) %>%
   group_by(driverId, driver_name) %>%
   summarise(vitorias = n(), .groups = "drop") %>%
-  arrange(desc(vitorias)) %>%
-  slice_head(n = 3)
-
-val_text <- paste(paste0("        ",1:nrow(top3_vitorias), ". ", top3_vitorias$driver_name, "
-                         "), collapse = "<br/>")
+  slice_max(vitorias, n = 1, with_ties = FALSE)
 
 valueBox(
-  value = HTML(val_text), 
-  caption = "TOP 3 — Mais Vitórias", 
-  icon = "fa-trophy", 
-  color = "gold"
+  value = maior_vencedor$driver_name,
+  caption = paste("Mais Vitórias na História (", maior_vencedor$vitorias, " vitórias)"),
+  icon = "fa-flag-checkered",
+  color = "danger"
 )
 ```
 
@@ -581,21 +571,17 @@ valueBox(
 ### Piloto com Mais Pódios {data-width="333"}
 
 ```{r}
-top3_podios <- f1_data %>%
+maior_podios <- f1_data %>%
   filter(positionOrder %in% c(1, 2, 3)) %>%
   group_by(driverId, driver_name) %>%
   summarise(podios = n(), .groups = "drop") %>%
-  arrange(desc(podios)) %>%
-  slice_head(n = 3)
-
-val_text <- paste(paste0(1:nrow(top3_podios), ". ", top3_podios$driver_name, "
-"), collapse = "<br/>")
+  slice_max(podios, n = 1, with_ties = FALSE)
 
 valueBox(
-  value = HTML(val_text), 
-  caption = "TOP 3 — Mais Pódios", 
-  icon = "fa-trophy", 
-  color = "gold"
+  value = maior_podios$driver_name,
+  caption = paste("Mais Pódios na História (", maior_podios$podios, " pódios)"),
+  icon = "fa-star",
+  color = "info"
 )
 ```
 
