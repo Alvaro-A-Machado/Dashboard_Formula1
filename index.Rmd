@@ -8,7 +8,8 @@ output:
 
 ```{=html}
 <style>
-body { background-color: #0a0a0a !important; color: #f0f0f0 !important; }
+body { font-family: 'Montserrat', sans-serif !important;
+  background-color: #0a0a0a !important; color: #f0f0f0 !important; }
 
 /* Navbar */
 .navbar {
@@ -27,8 +28,8 @@ body { background-color: #0a0a0a !important; color: #f0f0f0 !important; }
 .navbar-nav > li > a {
   color: #ffffff !important;
   line-height: 80px !important;
-  font-size: 0.95rem !important;
-  font-weight: 600 !important;
+  font-size: 1.2rem !important;
+  font-weight: 800 !important;
   letter-spacing: 1px !important;
   padding: 0 18px !important;
 }
@@ -46,9 +47,9 @@ body { background-color: #0a0a0a !important; color: #f0f0f0 !important; }
   background-color: #111111 !important;
   color: #ffffff !important;
   border-bottom: 2px solid #E10600 !important;
-  font-weight: 700 !important;
+  font-weight: 800 !important;
   text-transform: uppercase !important;
-  font-size: 1rem !important;
+  font-size: 1.5rem !important;
   padding: 14px 18px !important;
 }
 
@@ -63,13 +64,15 @@ body { background-color: #0a0a0a !important; color: #f0f0f0 !important; }
   height: 100% !important;
 }
 .value-box .value {
-  font-size: 1.6rem !important;
-  font-weight: 800 !important;
+  white-space: pre-line !important;
+  font-size: 1.3rem !important;
+  font-weight: 600 !important;
   color: #ffffff !important;
   line-height: 1.4 !important;
+  display: block !important;
 }
 .value-box .caption {
-  font-size: 0.85rem !important;
+  font-size: 1.3rem !important;
   text-transform: uppercase !important;
   color: rgba(255,255,255,0.8) !important;
   letter-spacing: 1.5px !important;
@@ -89,10 +92,10 @@ table.dataTable thead th {
   color: #E10600 !important;
   border-bottom: 2px solid #E10600 !important;
   text-transform: uppercase !important;
-  font-size: 0.82rem !important;
+  font-size: 1.3rem !important;
   padding: 12px 10px !important;
 }
-table.dataTable tbody td { font-size: 0.95rem !important; padding: 11px 10px !important; }
+table.dataTable tbody td { font-size: 1.3rem !important; padding: 11px 10px !important; }
 table.dataTable tbody tr { background-color: #111 !important; color: #e0e0e0 !important; }
 table.dataTable tbody tr:hover { background-color: #1a1a1a !important; }
 table.dataTable tbody tr.odd { background-color: #131313 !important; }
@@ -100,11 +103,11 @@ table.dataTable tbody tr.odd { background-color: #131313 !important; }
   background-color: #1a1a1a !important;
   color: #f0f0f0 !important;
   border: 1px solid #333 !important;
-  font-size: 0.9rem !important;
+  font-size: 1.0rem !important;
   padding: 6px 12px !important;
 }
 .dataTables_wrapper .dataTables_filter label,
-.dataTables_wrapper .dataTables_info { color: #888 !important; font-size: 0.88rem !important; }
+.dataTables_wrapper .dataTables_info { color: #888 !important; font-size: 1.0rem !important; }
 
 /* Rodapé */
 .footer-custom {
@@ -169,8 +172,8 @@ f1_data <- results %>%
 constructors_summary <- tibble(
   equipe       = c("Ferrari","McLaren","Williams","Mercedes","Lotus",
                    "Red Bull","Brabham","Renault","Tyrrell","BRM"),
-  pais         = c("Itália","Reino Unido","Reino Unido","Alemanha",
-                   "Reino Unido","Áustria","Reino Unido","França",
+  pais         = c("It\u00edlia","Reino Unido","Reino Unido","Alemanha",
+                   "Reino Unido","\u00c1ustria","Reino Unido","Fran\u00e7a",
                    "Reino Unido","Reino Unido"),
   primeiro_ano = c(1950,1966,1977,1954,1958,2005,1962,1977,1970,1951),
   titulos      = c(16, 8, 9, 8, 7, 6, 2, 2, 1, 1),
@@ -312,18 +315,25 @@ metric_circuitos <- paste0(
 ```
 
 
+# ESTRUTURA & DADOS
 
+## Row {data-height="110"}
 
-# Estrutura & Dados
+### O que esta aba mostra 
 
-## Row {data-height="200"}
+- Quais arquivos do Kaggle foram usados.
+- Quantas temporadas, corridas, pilotos, circuitos e paises aparecem na base.
+- Como as tabelas se relacionam por chaves, como `raceId`, `driverId`, `constructorId`, `circuitId` e `statusId`.
+- Uma checagem visual da cobertura do dataset antes das analises do grupo.
+
+## Row {data-height="150"}
 
 ### Temporadas cobertas {.value-box}
 
 ```{r}
 valueBox(
   value = "1950 - 2024",
-  icon  = "fa-trophy",
+  icon  = "fa-calendar",
   color = "#E8002D"
 )
 ```
@@ -343,7 +353,7 @@ valueBox(
 ```{r}
 valueBox(
   value = "861",
-  icon  = "fa-bolt",
+  icon  = "fa-users",
   color = "#007d74"
 )
 ```
@@ -353,12 +363,12 @@ valueBox(
 ```{r}
 valueBox(
   value = "77 circuitos | 35 Países",
-  icon  = "fa-star",
+  icon  = "fa-map",
   color = "#3671C6"
 )
 ```
 
-## Row
+## Row {data-height="310"}
 
 ### Inventario dos Arquivos
 
@@ -446,7 +456,7 @@ races_by_country %>%
   config(displayModeBar = FALSE, responsive = TRUE)
 ```
 
-## Row
+## Row {data-heigth="360"}
 
 ### Status dos Resultados {data-width="400"} 
 
@@ -480,17 +490,8 @@ status_summary %>%
   config(displayModeBar = FALSE, responsive = TRUE)
 ```
 
-### O que esta aba mostra {data-width="400"}
 
-- Quais arquivos do Kaggle foram usados.
-- Quantas temporadas, corridas, pilotos, circuitos e paises aparecem na base.
-- Como as tabelas se relacionam por chaves, como `raceId`, `driverId`, `constructorId`, `circuitId` e `statusId`.
-- Uma checagem visual da cobertura do dataset antes das analises do grupo.
-
-
-## Row
-
-### Dicionario Relacional
+### Dicionario Relacional {data-width="400"}
 
 ```{r}
 data_dictionary %>%
@@ -506,26 +507,49 @@ data_dictionary %>%
   )
 ```
 
-# Pilotos
+## Row {data-height="100"}
+
+###  {data-width="1000"}
+
+```{r}
+div(
+  class = "footer-custom",
+  tags$p(
+    class = "disciplina",
+    "MAF 213 — Visualização de Dados · UFV Campus Florestal · 2026/1"
+  ),
+  tags$p(
+    class = "nomes",
+    "Amanda · Álvaro · Júlia · Maria Eduarda"
+  )
+)
+```
+
+# PILOTOS
 
 ## Row {data-height="150"}
 
 ### Pilotos com Mais Títulos {data-width="333"}
 
 ```{r}
-titulos_por_piloto <- f1_data %>%
+top3_titulos <- f1_data %>%
   group_by(year, driver_name) %>%
   summarise(total_points = sum(points, na.rm = TRUE), .groups = "drop") %>%
   group_by(year) %>%
   slice_max(total_points, n = 1, with_ties = FALSE) %>%
   group_by(driver_name) %>%
   summarise(titulos = n()) %>%
-  slice_max(titulos, n = 1, with_ties = FALSE)
+  arrange(desc(titulos)) %>%
+  slice_head(n = 3)
+
+# Usamos <br> simples para quebrar a linha sem complicar o layout
+val_text <- paste(paste0("        ", 1:nrow(top3_titulos), ". ", top3_titulos$driver_name), "
+                         ", collapse = "<br/>")
 
 valueBox(
-  value = titulos_por_piloto$driver_name,
-  caption = paste("Mais Títulos Mundiais (", titulos_por_piloto$titulos, " títulos)"),
-  icon = "fa-trophy",
+  value = HTML(val_text), 
+  caption = "TOP 3 — Mais Títulos", 
+  icon = "fa-trophy", 
   color = "gold"
 )
 ```
@@ -535,17 +559,21 @@ valueBox(
 
 ```{r}
 # 2. Agrupando por driverId para contar vitórias (positionOrder == 1)
-maior_vencedor <- f1_data %>%
+top3_vitorias <- f1_data %>%
   filter(positionOrder == 1) %>%
   group_by(driverId, driver_name) %>%
   summarise(vitorias = n(), .groups = "drop") %>%
-  slice_max(vitorias, n = 1, with_ties = FALSE)
+  arrange(desc(vitorias)) %>%
+  slice_head(n = 3)
+
+val_text <- paste(paste0("        ",1:nrow(top3_vitorias), ". ", top3_vitorias$driver_name, "
+                         "), collapse = "<br/>")
 
 valueBox(
-  value = maior_vencedor$driver_name,
-  caption = paste("Mais Vitórias na História (", maior_vencedor$vitorias, " vitórias)"),
-  icon = "fa-flag-checkered",
-  color = "danger"
+  value = HTML(val_text), 
+  caption = "TOP 3 — Mais Vitórias", 
+  icon = "fa-trophy", 
+  color = "gold"
 )
 ```
 
@@ -553,217 +581,228 @@ valueBox(
 ### Piloto com Mais Pódios {data-width="333"}
 
 ```{r}
-# 3. Pódios (Posições 1, 2 ou 3)
-maior_podios <- f1_data %>%
+top3_podios <- f1_data %>%
   filter(positionOrder %in% c(1, 2, 3)) %>%
   group_by(driverId, driver_name) %>%
   summarise(podios = n(), .groups = "drop") %>%
-  slice_max(podios, n = 1, with_ties = FALSE)
+  arrange(desc(podios)) %>%
+  slice_head(n = 3)
+
+val_text <- paste(paste0(1:nrow(top3_podios), ". ", top3_podios$driver_name, "
+"), collapse = "<br/>")
 
 valueBox(
-  value = maior_podios$driver_name,
-  caption = paste("Mais Pódios na História (", maior_podios$podios, " pódios)"),
-  icon = "fa-star",
-  color = "info"
+  value = HTML(val_text), 
+  caption = "TOP 3 — Mais Pódios", 
+  icon = "fa-trophy", 
+  color = "gold"
 )
 ```
 
+
 ## Row {data-height="450"}
 
-### Evolução de Pontos por Temporada (Top Pilotos) {data-width="400"}
+### Pontos por Temporada (Top 10) {data-width="500"}
 
 ```{r}
-# 1. Definir as cores oficiais das equipes dos respectivos pilotos para o gráfico
+# 1. Descobrir dinamicamente os Top Pilotos
+top10_pilotos_nomes <- f1_data %>%
+  filter(positionOrder == 1) %>%
+  group_by(driver_name) %>%
+  summarise(vitorias = n(), .groups = "drop") %>%
+  slice_max(vitorias, n = 10, with_ties = TRUE) %>%
+  pull(driver_name)
+
+# 2. Definir cores para os principais pilotos
 cores_pilotos <- c(
-  "Lewis Hamilton"     = "#00D2BE", # Teal da Mercedes
-  "Michael Schumacher" = "#E8002D", # Vermelho da Ferrari
-  "Ayrton Senna"       = "#FF8000", # Laranja de Papaia da McLaren
-  "Max Verstappen"     = "#3671C6"  # Azul Marinho da Red Bull
+  "Lewis Hamilton" = "#00D2BE", "Michael Schumacher" = "#E8002D",
+  "Max Verstappen" = "#3671C6", "Sebastian Vettel" = "#006F62",
+  "Alain Prost" = "#0055A4", "Ayrton Senna" = "#FF8000",
+  "Fernando Alonso" = "#0090FF", "Nigel Mansell" = "#1F2F5D",
+  "Jackie Stewart" = "#004225", "Niki Lauda" = "#C61D23", 
+  "Jim Clark" = "#3e5f33", "Juan Fangio" = "#9e9e9e"
 )
 
-# Filtrar e agrupar evolução temporal
-top_pilotos_nomes <- c("Lewis Hamilton", "Michael Schumacher", "Ayrton Senna", "Max Verstappen")
-
+# 3. Filtrar e agrupar a evolução temporal criando a coluna de texto segura
 evolucao <- f1_data %>%
-  filter(driver_name %in% top_pilotos_nomes) %>%
+  filter(driver_name %in% top10_pilotos_nomes) %>%
   group_by(year, driver_name) %>%
   summarise(
     pontos_ano = sum(points, na.rm = TRUE),
     vitorias_ano = sum(positionOrder == 1),
     .groups = "drop"
+  ) %>% 
+  mutate(
+    texto_balao = paste0("<b>Piloto:</b> ", driver_name,
+                         "<br><b>Pontos no Ano:</b> ", pontos_ano),
+    texto_balao2 = paste0("<b>Piloto:</b> ", driver_name,
+                         "<br><b>Vit\u00f3rias no Ano:</b> ", vitorias_ano)
   )
 
-# 2. Construir o gráfico com o tema Dark customizado
-p <- ggplot(evolucao, aes(x = year, y = pontos_ano, color = driver_name, group = driver_name)) +
-  geom_line(size = 1.2, alpha = 0.85) +
-  geom_point(size = 2, alpha = 0.9) +
-  # Aplica a paleta de cores personalizada dos pilotos
+# Gráfico de Pontos (Eixo X limpo com x = NULL)
+p <- ggplot(evolucao, aes(x = year, y = pontos_ano, color = driver_name, group = driver_name, text = texto_balao)) +
+  geom_line(size = 0.7, alpha = 0.7) +
+  geom_point(size = 1, alpha = 0.8) +
   scale_color_manual(values = cores_pilotos) +
-  labs(
-    #title = "Evolução de Pontos por Temporada", 
-    x = "Ano", 
-    y = "Pontos Obtidos", 
-    color = "Piloto"
-  ) +
-  # Customização fina para casar com o CSS do seu painel
-  theme_minimal(base_family = "sans") +
+  scale_x_continuous(breaks = seq(1950, 2025, by = 5)) +
+  labs(x = NULL, y = NULL, color = NULL) +
+  theme_minimal(base_family = "Montserrat") +
   theme(
-    # Fundo do gráfico e do painel combinando com as caixas do flexdashboard (#111111)
+    legend.text = element_text(family = "Montserrat", size = 12),
     plot.background   = element_rect(fill = "#111111", color = NA),
     panel.background  = element_rect(fill = "#111111", color = NA),
-    
-    # Linhas de grade horizontais e verticais bem discretas
     panel.grid.major  = element_line(color = "#252525", size = 0.4),
     panel.grid.minor  = element_blank(),
-    
-    # Cores dos textos (Títulos e Eixos) em branco/cinza claro
-    plot.title        = element_text(color = "#ffffff", face = "bold", size = 14, vjust = 2),
     axis.title        = element_text(color = "#aaaaaa", size = 11),
-    axis.text         = element_text(color = "#888888", size = 10),
-    
-    # Legenda interna (caso o Plotly exiba a legenda do ggplot)
-    legend.title      = element_text(color = "#ffffff", face = "bold"),
-    legend.text       = element_text(color = "#e0e0e0"),
-    legend.background = element_rect(fill = "#111111", color = NA)
+    axis.text         = element_text(color = "#888888", size = 11)
   )
 
-# 3. Converter para Plotly aplicando correções de fundo e estilo de tooltip (balão)
-ggplotly(p) %>%
+ggplotly(p, tooltip = "text") %>%
   layout(
-    # Garante que o fundo do container do Plotly também seja escuro
-    plot_bgcolor  = "#111111",
-    paper_bgcolor = "#111111",
-    # Estilização da legenda interativa do Plotly
+    plot_bgcolor  = "#111111", paper_bgcolor = "#111111",
+    hovermode     = "x unified", # <-- RÉGUA E BALÃO AGRUPADO
     legend = list(
-      font = list(color = "#ffffff"),
-      bgcolor = "transparent"
+      orientation = "h", x = 0.5, y = -0.25, xanchor = "center",
+      font = list(color = "#ffffff"), bgcolor = "transparent"
     ),
-    # Customização do balão que aparece ao passar o mouse (Tooltip)
-    hoverlabel = list(
-      bgcolor = "#222222",
-      font = list(color = "#ffffff", size = 12),
-      bordercolor = "#E10600" # Borda vermelha padrão F1
-    )
+    hoverlabel = list(bgcolor = "#222222", font = list(color = "#ffffff"), bordercolor = "#E10600")
+  )
+  
+```
+
+
+### Vitórias por Temporada (Top 10) {data-width="500"}
+
+```{r}
+# Gráfico de Vitórias (Eixo X limpo com x = NULL)
+v <- ggplot(evolucao, aes(x = year, y = vitorias_ano, color = driver_name, group = driver_name, text = texto_balao2)) +
+  geom_line(size = 0.7, alpha = 0.7) +
+  geom_point(size = 1, alpha = 0.8) +
+  scale_color_manual(values = cores_pilotos) +
+  scale_x_continuous(breaks = seq(1950, 2025, by = 5)) +
+  labs(x = NULL, y = NULL, color = NULL) +
+  theme_minimal(base_family = "Montserrat") +
+  theme(
+    legend.text = element_text(family = "Montserrat", size = 12),
+    plot.background   = element_rect(fill = "#111111", color = NA),
+    panel.background  = element_rect(fill = "#111111", color = NA),
+    panel.grid.major  = element_line(color = "#252525", size = 0.4),
+    panel.grid.minor  = element_blank(),
+    axis.title        = element_text(color = "#aaaaaa", size = 11),
+    axis.text         = element_text(color = "#888888", size = 10)
+  )
+
+ggplotly(v, tooltip = "text") %>%
+  layout(
+    plot_bgcolor  = "#111111", paper_bgcolor = "#111111",
+    hovermode     = "x unified", # <-- RÉGUA E BALÃO AGRUPADO
+    legend = list(
+      orientation = "h", x = 0.5, y = -0.25, xanchor = "center",
+      font = list(color = "#ffffff"), bgcolor = "transparent"
+    ),
+    hoverlabel = list(bgcolor = "#222222", font = list(color = "#ffffff"), bordercolor = "#E10600")
+  )
+```
+
+## Row {data-height="500"}
+
+### Taxa de Aproveitamento (Vitórias / Corridas) {data-width="500"}
+
+```{r}
+aproveitamento <- f1_data %>%
+  filter(driver_name %in% top10_pilotos_nomes) %>%
+  group_by(driver_name) %>%
+  summarise(
+    Total_Corridas = n_distinct(raceId),
+    Total_Vitorias = sum(positionOrder == 1),
+    Taxa_Vitoria = (Total_Vitorias / Total_Corridas) * 100,
+    .groups = "drop"
+  ) %>%
+  # Utilização de \u00f3 no lugar de "ó" para evitar o erro multibyte
+  mutate(
+    texto_balao2 = paste0("<b>Piloto:</b> ", driver_name,
+                          "<br><b>Corridas:</b> ", Total_Corridas,
+                          "<br><b>Vit\u00f3rias:</b> ", Total_Vitorias,
+                          "<br><b>Taxa de Vit\u00f3ria:</b> ", round(Taxa_Vitoria, 1), "%")
+  )
+
+p_aprov <- ggplot(aproveitamento, aes(x = reorder(driver_name, Taxa_Vitoria), y = Taxa_Vitoria, fill = driver_name, text = texto_balao2)) +
+  geom_col(alpha = 0.9) +
+  scale_fill_manual(values = cores_pilotos) +
+  coord_flip() +
+  # Aplicação do Unicode também no rótulo do eixo Y
+  labs(x = NULL, y = NULL) +
+  theme_minimal(base_family = "Montserrat") +
+  theme(
+    legend.text = element_text(family = "Montserrat", size = 12),
+    plot.background   = element_rect(fill = "#111111", color = NA),
+    panel.background  = element_rect(fill = "#111111", color = NA),
+    panel.grid.major  = element_line(color = "#252525", size = 0.4),
+    panel.grid.minor  = element_blank(),
+    axis.title        = element_text(color = "#aaaaaa", size = 11),
+    axis.text         = element_text(color = "#ffffff", size = 11, face = "bold"),
+    legend.position   = "none" 
+  )
+
+ggplotly(p_aprov, tooltip = "text") %>%
+  layout(
+    plot_bgcolor  = "#111111", paper_bgcolor = "#111111",
+    hoverlabel = list(bgcolor = "#222222", font = list(color = "#ffffff"), bordercolor = "#E10600")
   )
 ```
 
 
-### Evolução de Vitórias por Temporada (Top Pilotos) {data-width="400"}
+### Ranking e Estatísticas Gerais dos Pilotos (1950 - 2024) {data-width="500"}
 ```{r}
-# 1. Definir as cores oficiais das equipes dos respectivos pilotos para o gráfico
-cores_pilotos <- c(
-  "Lewis Hamilton"     = "#00D2BE", # Teal da Mercedes
-  "Michael Schumacher" = "#E8002D", # Vermelho da Ferrari
-  "Ayrton Senna"       = "#FF8000", # Laranja de Papaia da McLaren
-  "Max Verstappen"     = "#3671C6"  # Azul Marinho da Red Bull
-)
-
-# 2. Construir o gráfico de vitórias com o tema Dark customizado
-v <- ggplot(evolucao, aes(x = year, y = vitorias_ano, color = driver_name, group = driver_name)) +
-  geom_line(size = 1.2, alpha = 0.85) +
-  geom_point(size = 2, alpha = 0.9) +
-  # Aplica a paleta de cores personalizada dos pilotos
-  scale_color_manual(values = cores_pilotos) +
-  labs(
-    #title = "Evolução de Vitórias por Temporada", 
-    x = "Ano", 
-    y = "Número de Vitórias", 
-    color = "Piloto"
-  ) +
-  # Customização fina para casar com o CSS do seu painel
-  theme_minimal(base_family = "sans") +
-  theme(
-    # Fundo do gráfico e do painel combinando com as caixas do flexdashboard (#111111)
-    plot.background   = element_rect(fill = "#111111", color = NA),
-    panel.background  = element_rect(fill = "#111111", color = NA),
-    
-    # Linhas de grade horizontais e verticais bem discretas
-    panel.grid.major  = element_line(color = "#252525", size = 0.4),
-    panel.grid.minor  = element_blank(),
-    
-    # Cores dos textos (Títulos e Eixos) em branco/cinza claro
-    plot.title        = element_text(color = "#ffffff", face = "bold", size = 14, vjust = 2),
-    axis.title        = element_text(color = "#aaaaaa", size = 11),
-    axis.text         = element_text(color = "#888888", size = 10),
-    
-    # Legenda interna (caso o Plotly exiba a legenda do ggplot)
-    legend.title      = element_text(color = "#ffffff", face = "bold"),
-    legend.text       = element_text(color = "#e0e0e0"),
-    legend.background = element_rect(fill = "#111111", color = NA)
-  )
-
-# 3. Converter para Plotly aplicando correções de fundo e estilo de tooltip (balão)
-ggplotly(v) %>%
-  layout(
-    # Garante que o fundo do container do Plotly também seja escuro
-    plot_bgcolor  = "#111111",
-    paper_bgcolor = "#111111",
-    # Estilização da legenda interativa do Plotly
-    legend = list(
-      font = list(color = "#ffffff"),
-      bgcolor = "transparent"
-    ),
-    # Customização do balão que aparece ao passar o mouse (Tooltip)
-    hoverlabel = list(
-      bgcolor = "#222222",
-      font = list(color = "#ffffff", size = 12),
-      bordercolor = "#E10600" # Borda vermelha padrão F1
-    )
-  )
-```
-
-## Row {data-height="450"}
-
-### Ranking e Estatísticas Gerais dos Pilotos (1950 - 2024) {data-width="800"}
-```{r}
-# Filtrando e agrupando os dados por piloto utilizando dplyr (group_by, summarise)
+# Filtrando e agrupando os dados (nomes de variáveis SEM acentos no backend)
 ranking_pilotos <- f1_data %>%
   filter(year >= 1950 & year <= 2024) %>%
-  group_by(driverId, driver_name) %>% # Usando o driverId conforme instrução do Obs.
+  group_by(driverId, driver_name) %>% 
   summarise(
     Nacionalidade = first(nationality),
     Corridas = n(),
-    Vitórias = sum(positionOrder == 1),
-    Pódios = sum(positionOrder %in% c(1, 2, 3)),
+    Vitorias = sum(positionOrder == 1), # Variável limpa
+    Podios = sum(positionOrder %in% c(1, 2, 3)), # Variável limpa
     Pontos_Totais = sum(points, na.rm = TRUE),
     .groups = "drop"
   ) %>%
   ungroup() %>%
-  # Ajustando os nomes das colunas direto no select para alinhar com o formatStyle
   select(
     Piloto          = driver_name, 
     Nacionalidade, 
     Corridas, 
-    Vitórias, 
-    Pódios, 
+    Vitorias, 
+    Podios, 
     `Pontos Totais` = Pontos_Totais
   ) %>%
-  arrange(desc(Vitórias), desc(Pódios))
+  arrange(desc(Vitorias), desc(Podios))
 
-# Inserindo tabela interativa com o pacote DT (seguindo o padrão visual do grupo)
+# Inserindo tabela interativa com o pacote DT
 datatable(
   ranking_pilotos,
   rownames = FALSE,
+  # Aqui definimos os nomes de exibição (frontend) com os códigos Unicode infalíveis
+  colnames = c("Piloto", "Nacionalidade", "Corridas", "Vit\u00f3rias", "P\u00f3dios", "Pontos Totais"),
   options  = list(
     pageLength = 10,
     searching  = TRUE,
     ordering   = TRUE,
-    dom        = "ft", # Mantém apenas o campo de busca (f) e a tabela (t)
-    columnDefs = list(list(className = "dt-center", targets = 2:5)), # Centraliza as colunas numéricas
-    language   = list(search = "🔍 Buscar piloto:")
+    dom        = "ft", 
+    columnDefs = list(list(className = "dt-center", targets = 2:5)), 
+    language   = list(search = "Buscar piloto:") # Removido o emoji da lupa para evitar outro possível erro de encoding
   ),
   class = "compact stripe"
 ) %>%
-  # Adiciona a barra de progresso vermelha (F1) na coluna de Vitórias
-  formatStyle("Vitórias",
-    background         = styleColorBar(c(0, max(ranking_pilotos$Vitórias)), "#E8002D55"),
+  # Adiciona a barra de progresso vermelha referenciando a coluna limpa
+  formatStyle("Vitorias",
+    background         = styleColorBar(c(0, max(ranking_pilotos$Vitorias)), "#E8002D55"),
     backgroundSize     = "98% 60%",
     backgroundRepeat   = "no-repeat",
     backgroundPosition = "center"
   ) %>%
-  # Adiciona a barra de progresso laranja na coluna de Pódios
-  formatStyle("Pódios",
-    background         = styleColorBar(c(0, max(ranking_pilotos$Pódios)), "#FF800055"),
+  # Adiciona a barra de progresso laranja referenciando a coluna limpa
+  formatStyle("Podios",
+    background         = styleColorBar(c(0, max(ranking_pilotos$Podios)), "#FF800055"),
     backgroundSize     = "98% 60%",
     backgroundRepeat   = "no-repeat",
     backgroundPosition = "center"
@@ -789,9 +828,9 @@ div(
 )
 ```
 
-# Equipes & Construtores
+# EQUIPES & CONSTRUTORES
 
-## Row {data-height="200"}
+## Row {data-height="150"}
 
 ### 🏆 Maior Campeã {.value-box}
 
@@ -838,32 +877,35 @@ valueBox(
 ### Ranking de Construtores (1950–2024) {data-width="420"}
 
 ```{r}
+# 1. Variáveis limpas (sem acento) no backend
 top10 <- constructors_summary %>%
   arrange(desc(titulos), desc(vitorias)) %>%
-  select(Equipe = equipe, País = pais,
-         Títulos = titulos, Vitórias = vitorias, Pódios = podios)
+  select(Equipe = equipe, Pais = pais,
+         Titulos = titulos, Vitorias = vitorias, Podios = podios)
 
+# 2. Tabela com os códigos Unicode seguros no frontend
 datatable(
   top10,
   rownames = FALSE,
+  colnames = c("Equipe", "Pa\u00eds", "T\u00edtulos", "Vit\u00f3rias", "P\u00f3dios"),
   options  = list(
     pageLength = 10,
     searching  = TRUE,
     ordering   = TRUE,
     dom        = "ft",
     columnDefs = list(list(className = "dt-center", targets = 2:4)),
-    language   = list(search = "🔍 Buscar equipe:")
+    language   = list(search = "Buscar equipe:")
   ),
   class = "compact stripe"
 ) %>%
-  formatStyle("Títulos",
-    background         = styleColorBar(c(0, max(top10$Títulos)), "#E8002D55"),
+  formatStyle("Titulos", # Usando a coluna limpa
+    background         = styleColorBar(c(0, max(top10$Titulos)), "#E8002D55"),
     backgroundSize     = "98% 60%",
     backgroundRepeat   = "no-repeat",
     backgroundPosition = "center"
   ) %>%
-  formatStyle("Vitórias",
-    background         = styleColorBar(c(0, max(top10$Vitórias)), "#FF800055"),
+  formatStyle("Vitorias", # Usando a coluna limpa
+    background         = styleColorBar(c(0, max(top10$Vitorias)), "#FF800055"),
     backgroundSize     = "98% 60%",
     backgroundRepeat   = "no-repeat",
     backgroundPosition = "center"
@@ -884,7 +926,7 @@ eras_df %>%
     mode          = "lines+markers",
     marker        = list(size = 8),
     line          = list(width = 3),
-    hovertemplate = "<b>%{fullData.name}</b><br>Era: %{x}<br>Vitórias: %{y}<extra></extra>"
+    hovertemplate = "<b>%{fullData.name}</b><br>Era: %{x}<br>Vit\u00f3rias: %{y}<extra></extra>"
   ) %>%
   layout(
     paper_bgcolor = "rgba(0,0,0,0)",
@@ -892,7 +934,7 @@ eras_df %>%
     font      = list(color = "#cccccc", size = 13),
     legend    = list(orientation = "h", y = -0.2),
     xaxis     = list(title = "", gridcolor = "#2a2a2a", tickangle = -30),
-    yaxis     = list(title = "Vitórias", gridcolor = "#2a2a2a"),
+    yaxis     = list(title = "Vit\u00f3rias", gridcolor = "#2a2a2a"),
     hovermode = "x unified"
   )
 ```
@@ -912,13 +954,13 @@ constructors_summary %>%
     type          = "bar",
     orientation   = "h",
     marker        = list(color = ~cor, line = list(color = ~cor, width = 1)),
-    hovertemplate = "<b>%{y}</b><br>Vitórias: %{x}<extra></extra>"
+    hovertemplate = "<b>%{y}</b><br>Vit\u00f3rias: %{x}<extra></extra>"
   ) %>%
   layout(
     paper_bgcolor = "rgba(0,0,0,0)",
     plot_bgcolor  = "rgba(0,0,0,0)",
     font  = list(color = "#cccccc", size = 13),
-    xaxis = list(title = "Vitórias", gridcolor = "#2a2a2a"),
+    xaxis = list(title = "Vit\u00f3rias", gridcolor = "#2a2a2a"),
     yaxis = list(title = "")
   )
 ```
@@ -936,13 +978,13 @@ constructors_summary %>%
     type          = "bar",
     orientation   = "h",
     marker        = list(color = ~cor, line = list(color = ~cor, width = 1)),
-    hovertemplate = "<b>%{y}</b><br>Pódios: %{x}<extra></extra>"
+    hovertemplate = "<b>%{y}</b><br>P\u00f3dios: %{x}<extra></extra>"
   ) %>%
   layout(
     paper_bgcolor = "rgba(0,0,0,0)",
     plot_bgcolor  = "rgba(0,0,0,0)",
     font  = list(color = "#cccccc", size = 13),
-    xaxis = list(title = "Pódios", gridcolor = "#2a2a2a"),
+    xaxis = list(title = "P\u00f3dios", gridcolor = "#2a2a2a"),
     yaxis = list(title = "")
   )
 ```
@@ -965,7 +1007,9 @@ div(
 )
 ```
 
-# Circuitos & Corridas
+# CIRCUITOS & CORRIDAS
+
+* A análise abaixo apresenta a distribuição dos circuitos e Grandes Prémios ao redor do mundo, destacando os países com maior tradição na Fórmula 1.
 
 ## Row {data-height=150}
 ### Total de Grandes Prémios Realizados {.value-box}
@@ -1004,7 +1048,7 @@ valueBox(mais_frequentado$name_circuito, icon = "fa-trophy", color = "warning")
 library(leaflet)
 
 leaflet(circuits) %>%
-  addTiles() %>%
+  addProviderTiles(providers$CartoDB.DarkMatter) %>% # Aplica o mapa base escuro
   addMarkers(
     lng = ~lng, 
     lat = ~lat, 
@@ -1013,22 +1057,33 @@ leaflet(circuits) %>%
   )
 ```
 
+
 ### Países que Mais Sediaram Corridas (Top 15) {data-width="400"}
 
 ```{r}
-# Contagem de corridas por país para o gráfico de barras
 dados_paises <- dados_combinados %>%
   count(country, sort = TRUE) %>%
   head(15)
 
-ggplot(dados_paises, aes(x = reorder(country, n), y = n)) +
-  geom_col(fill = "firebrick") +
+p_paises <- ggplot(dados_paises, aes(x = reorder(country, n), y = n)) +
+  geom_col(fill = "#E10600", alpha = 0.85) + 
   coord_flip() +
-  labs(
-    x = "País",
-    y = "Número de Corridas"
-  ) +
-  theme_minimal()
+  labs(x = "Pa\u00eds", y = "N\u00famero de Corridas") + # Códigos Unicode aqui
+  theme_minimal(base_family = "sans") +
+  theme(
+    plot.background   = element_rect(fill = "#111111", color = NA),
+    panel.background  = element_rect(fill = "#111111", color = NA),
+    panel.grid.major  = element_line(color = "#252525", size = 0.4),
+    panel.grid.minor  = element_blank(),
+    axis.title        = element_text(color = "#aaaaaa", size = 11),
+    axis.text         = element_text(color = "#888888", size = 10)
+  )
+
+ggplotly(p_paises) %>%
+  layout(
+    plot_bgcolor  = "#111111",
+    paper_bgcolor = "#111111"
+  )
 ```
 
 ## Row {data-height="400"}
@@ -1036,8 +1091,6 @@ ggplot(dados_paises, aes(x = reorder(country, n), y = n)) +
 ### Estatísticas e Rankings por Grande Prémio
 
 ```{r}
-library(DT)
-
 ranking_gps <- dados_combinados %>%
   group_by(name_corrida) %>%
   summarise(
@@ -1051,8 +1104,10 @@ ranking_gps <- dados_combinados %>%
 datatable(
   ranking_gps,
   options = list(pageLength = 5, searchHighlight = TRUE),
-  colnames = c("Grande Prémio", "Edições", "País", "Ano de Estreia", "Último Ano"),
-  rownames = FALSE
+  # Substituímos todas as palavras com acentos por códigos seguros no frontend
+  colnames = c("Grande Pr\u00e9mio", "Edi\u00e7\u00f5es", "Pa\u00eds", "Ano de Estreia", "\u00daltimo Ano"),
+  rownames = FALSE,
+  class = "compact stripe" 
 )
 ```
 
